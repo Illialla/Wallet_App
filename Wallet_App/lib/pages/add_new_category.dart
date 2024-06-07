@@ -13,26 +13,19 @@ class AddCategory extends StatefulWidget {
 
 class _AddCategoryState extends State<AddCategory> {
   @override
-  List<Color> color = [
-    Colors.red,
-    Colors.blue,
-    Colors.green,
-    Colors.yellow,
-    Colors.orange,
-    Colors.purple,
-    Colors.teal,
-    Colors.pink,
-  ];
-  ColorSwatch<dynamic>? _currentColor =
-      Colors.blue; // Устанавливаем начальный цвет по умолчанию
-  Color currentColor = Colors.green;
+  Color currentChosenColor = Color(0xFFD2C8FF);
+  Color currentColor = Colors.purple;
   List<Color> currentColors = [Colors.yellow, Colors.red];
-  // List<ColorSwatch<dynamic>> primaryColors = Colors.primaries.whereType<ColorSwatch<dynamic>>().toList();
-  // List<ColorSwatch<dynamic>> primaryColors = List<ColorSwatch<dynamic>>.generate(Colors.primaries.length,
-  //       (index) => Colors.primaries[index]![500]!,);
+  bool showColorPicker = false;
   void changeColor(Color color) => setState(() => currentColor = color);
   void changeColors(List<Color> colors) =>
       setState(() => currentColors = colors);
+  void changeChosenColor(Color color) {
+    setState(() {
+      currentChosenColor = color;
+      showColorPicker = false;
+    });
+  }
 
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -57,7 +50,8 @@ class _AddCategoryState extends State<AddCategory> {
             },
           ),
         ),
-        body: Center(
+        body: SingleChildScrollView(
+            child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -80,20 +74,19 @@ class _AddCategoryState extends State<AddCategory> {
                 ),
               ),
               Container(
-                height: 50,
-                margin: EdgeInsets.fromLTRB(30, 0, 30, 20),
-                child: TextField(
-                        decoration: InputDecoration(
-                          // border: OutlineInputBorder(),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20.0),
-                          ),
-                          contentPadding: EdgeInsets.symmetric(
-                              vertical: 15.0, horizontal: 20),
-                          hintText: 'Название категории',
-                        ),
-                      )
-              ),
+                  height: 50,
+                  margin: EdgeInsets.fromLTRB(30, 0, 30, 20),
+                  child: TextField(
+                    decoration: InputDecoration(
+                      // border: OutlineInputBorder(),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                      contentPadding:
+                          EdgeInsets.symmetric(vertical: 15.0, horizontal: 20),
+                      hintText: 'Название категории',
+                    ),
+                  )),
               Container(
                 margin: EdgeInsets.fromLTRB(35, 10, 35, 20),
                 child: Column(
@@ -116,49 +109,85 @@ class _AddCategoryState extends State<AddCategory> {
                   ],
                 ),
               ),
-              Container(
-                  margin: EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: Color(0xFFD2C8FF),
-                    borderRadius: BorderRadius.circular(20.0),
-                    border: Border.all(
-                      color: Color(0xFF160E73),
-                    ),
-                  ),
-                  padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 25.0),
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: Text(
-                        'Текущий цвет',
-                        style: TextStyle(
-                          fontSize: 20,
+              Column(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        showColorPicker = !showColorPicker;
+                      });
+                    },
+                    child: Container(
+                      margin: EdgeInsets.symmetric(
+                          horizontal: 30.0, vertical: 10.0),
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: currentColor,
+                        borderRadius: BorderRadius.circular(20.0),
+                        border: Border.all(
                           color: Color(0xFF160E73),
+                        ),
+                      ),
+                      padding: EdgeInsets.symmetric(
+                          vertical: 10.0, horizontal: 25.0),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            'Текущий цвет',
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: Color(0xFF160E73),
+                            ),
+                          ),
                         ),
                       ),
                     ),
                   ),
+                  if (showColorPicker)
+                    Container(
+                      height: 275,
+                      margin: EdgeInsets.symmetric(
+                          vertical: 20.0),
+                      child: MaterialPicker(
+                        pickerColor: currentColor,
+                        onColorChanged: changeColor,
+                      ),
+                    ),
+                ],
+              ),
+              Container(
+                margin:
+                    EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
+                height: 50,
+                width: 200,
+                decoration: BoxDecoration(
+                  color: Color(0xFFD2C8FF),
+                  borderRadius: BorderRadius.circular(25.0),
+                  border: Border.all(
+                    color: Color(0xFF160E73),
+                  ),
                 ),
-
-
-              // Container(
-              //   height: 1000,
-              //   child: Column(
-              //     children: [
-              //       SizedBox(height: 20),
-              //       Expanded(
-              //         child: MaterialPicker(
-              //             pickerColor: currentColor,
-              //             onColorChanged: changeColor),
-              //       ),
-              //     ],
-              //   ),
-              // ),
+                padding:
+                    EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+                child: Align(
+                  alignment: Alignment.center,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      'Создать',
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: Color(0xFF160E73),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
-        ),
+        )),
       ),
     );
   }
