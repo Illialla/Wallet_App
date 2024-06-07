@@ -82,57 +82,17 @@ class _AddCategoryState extends State<AddCategory> {
               Container(
                 height: 50,
                 margin: EdgeInsets.fromLTRB(30, 0, 30, 20),
-                child: Row(children: <Widget>[
-                  Expanded(
-                      flex: 7,
-                      child: TextField(
+                child: TextField(
                         decoration: InputDecoration(
                           // border: OutlineInputBorder(),
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(20.0),
-                                bottomLeft: Radius.circular(20.0)),
+                            borderRadius: BorderRadius.circular(20.0),
                           ),
                           contentPadding: EdgeInsets.symmetric(
                               vertical: 15.0, horizontal: 20),
                           hintText: 'Название категории',
                         ),
-                      )),
-                  Expanded(
-                    flex: 3,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Color(0xFFD2C8FF),
-                        borderRadius: BorderRadius.only(
-                          topRight: Radius.circular(20.0),
-                          bottomRight: Radius.circular(20.0),
-                        ),
-                        border: Border.all(
-                          color: Color(0xFF160E73),
-                        ),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 10.0, horizontal: 10.0),
-                            child: FittedBox(
-                              fit: BoxFit.scaleDown,
-                              child: Text(
-                                '100.0',
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  color: Color(0xFF160E73),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ]),
+                      )
               ),
               Container(
                 margin: EdgeInsets.fromLTRB(35, 10, 35, 20),
@@ -157,46 +117,45 @@ class _AddCategoryState extends State<AddCategory> {
                 ),
               ),
               Container(
-                margin:
-                    EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
-                height: 55,
-                // width: 250,
-                decoration: BoxDecoration(
-                  color: Color(0xFFD2C8FF),
-                  borderRadius: BorderRadius.circular(15.0),
-                  border: Border.all(
-                    color: Color(0xFF160E73),
+                  margin: EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: Color(0xFFD2C8FF),
+                    borderRadius: BorderRadius.circular(20.0),
+                    border: Border.all(
+                      color: Color(0xFF160E73),
+                    ),
                   ),
-                ),
-                padding:
-                    EdgeInsets.symmetric(vertical: 10.0, horizontal: 25.0),
-                child: Align(
-                  alignment: Alignment.center,
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Text(
-                      'Текущий цвет',
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: Color(0xFF160E73),
+                  padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 25.0),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        'Текущий цвет',
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Color(0xFF160E73),
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              Container(
-                height: 1000,
-                child: Column(
-                  children: [
-                    SizedBox(height: 20),
-                    Expanded(
-                      child: MaterialPicker(
-                          pickerColor: currentColor,
-                          onColorChanged: changeColor),
-                    ),
-                  ],
-                ),
-              ),
+
+
+              // Container(
+              //   height: 1000,
+              //   child: Column(
+              //     children: [
+              //       SizedBox(height: 20),
+              //       Expanded(
+              //         child: MaterialPicker(
+              //             pickerColor: currentColor,
+              //             onColorChanged: changeColor),
+              //       ),
+              //     ],
+              //   ),
+              // ),
             ],
           ),
         ),
