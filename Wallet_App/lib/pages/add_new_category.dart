@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:wallet_app/db_controllers/categories_data.dart';
+import 'package:wallet_app/pages/categories_page.dart';
+import 'package:wallet_app/pages/main_page.dart';
 
 class AddCategory extends StatefulWidget {
   const AddCategory({super.key, required this.title});
@@ -13,8 +15,9 @@ class AddCategory extends StatefulWidget {
 
 class _AddCategoryState extends State<AddCategory> {
   @override
-  Color currentChosenColor = Color(0xFFD2C8FF);
-  Color currentColor = Colors.purple;
+  String categoryName = '';
+  String categoryColour = '';
+  Color currentColor = Color(0xFFD2C8FF);
   List<Color> currentColors = [Colors.yellow, Colors.red];
   bool showColorPicker = false;
   void changeColor(Color color) => setState(() => currentColor = color);
@@ -22,8 +25,8 @@ class _AddCategoryState extends State<AddCategory> {
       setState(() => currentColors = colors);
   void changeChosenColor(Color color) {
     setState(() {
-      currentChosenColor = color;
-      showColorPicker = false;
+      currentColor = color;
+      // showColorPicker = false;
     });
   }
 
@@ -77,6 +80,9 @@ class _AddCategoryState extends State<AddCategory> {
                   height: 50,
                   margin: EdgeInsets.fromLTRB(30, 0, 30, 20),
                   child: TextField(
+                    onChanged: (value) {
+                      categoryName = value; // Сохраняем введённое пользователем название категории
+                    },
                     decoration: InputDecoration(
                       // border: OutlineInputBorder(),
                       border: OutlineInputBorder(
@@ -171,15 +177,34 @@ class _AddCategoryState extends State<AddCategory> {
                 ),
                 padding:
                     EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-                child: Align(
-                  alignment: Alignment.center,
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Text(
-                      'Создать',
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: Color(0xFF160E73),
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      categoryColour = currentColor.toString().substring(6, 16);
+                      print(categoryColour);
+                      addCategoryToDatabase(categoryName, categoryColour);
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MainScreen(
+                            title: 'Wallet App',
+                          ),
+                        ),
+                      );
+                      // _MainScreenState mainScreenState = context.findAncestorStateOfType<MainScreen>(); // Получаем экземпляр состояния MainScreen
+                      // mainScreenState._onItemTapped(1); // Переключение на CategoriesPage
+                    });
+                  },
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        'Создать',
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Color(0xFF160E73),
+                        ),
                       ),
                     ),
                   ),

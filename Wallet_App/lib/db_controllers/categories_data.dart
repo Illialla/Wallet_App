@@ -2,7 +2,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 Future<List<List<String>>> getCategoryList(String day, String month, String year, String _selectedBlock) async {
-  Database database = await openDatabase(join(await getDatabasesPath(), 'new_database.db'));
+  Database database = await openDatabase(join(await getDatabasesPath(), 'wallet_db.db'));
   String query = '';
   if(_selectedBlock=='day'){
     query = '''
@@ -52,17 +52,13 @@ Future<List<List<String>>> getCategoryList(String day, String month, String year
 }
 
 Future<List<List<String>>> getCategoryListForShow() async {
-  Database database = await openDatabase(join(await getDatabasesPath(), 'new_database.db'));
+  Database database = await openDatabase(join(await getDatabasesPath(), 'wallet_db.db'));
   String query = '';
-  // query = '''
-  //   SELECT cat.name
-  //   FROM tblCategory as cat
-  //   ORDER BY cat.name
-  // ''';
 
   query = '''
-    SELECT cat.name
-    FROM tblCategory as cat
+    SELECT cat.name, cat.colour
+      FROM tblCategory as cat
+      GROUP BY cat.category_id;
   ''';
 
   List<Map<String, dynamic>> categories = await database.rawQuery(query);
@@ -71,11 +67,31 @@ Future<List<List<String>>> getCategoryListForShow() async {
 
   categories.forEach((category) {
     String name = category['name'];
-    // String colour = category['colour'];
-    // Обработка случая, когда totalSum может быть NULL
-    // double totalSum = category['totalSum'] != null ? category['totalSum'] : 0.0;
-    categoryList.add([name]);
+    String colour = category['colour'];
+    categoryList.add([name, colour]);
   });
   print(categoryList);
   return categoryList;
+}
+
+Future<void> addCategoryToDatabase(String categoryName, String categoryColour) async {
+  // Получаем путь к базе данных
+  Database database = await openDatabase(join(await getDatabasesPath(), 'wallet_db.db'));
+
+  String query = 'INSERT INTO tblCategory(name, colour) VALUES("$categoryName", "$categoryColour")';
+
+  await database.transaction((txn) async {
+    await txn.rawInsert(query);
+  });
+}
+
+Future<void> deleteCategoryFromDatabase(String categoryName) async {
+  // Получаем путь к базе данных
+  Database database = await openDatabase(join(await getDatabasesPath(), 'wallet_db.db'));
+
+  String query = 'DELETE FROM tblCategory WHERE name = "$categoryName"';
+
+  await database.transaction((txn) async {
+    await txn.rawDelete(query);
+  });
 }

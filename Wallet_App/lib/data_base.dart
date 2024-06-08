@@ -3,7 +3,7 @@ import 'package:path/path.dart';
 
 Future<void> createDatabase() async {
   // Откройте соединение с базой данных:
-  Database database = await openDatabase(join(await getDatabasesPath(), 'new_database.db'), version: 1,
+  Database database = await openDatabase(join(await getDatabasesPath(), 'wallet_db.db'), version: 2,
   onCreate: (Database db, int version) async {
     // создание
     await db.execute('''

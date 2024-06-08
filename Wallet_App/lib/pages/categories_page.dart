@@ -48,7 +48,8 @@ class _CategoriesPageState extends State<CategoriesPage> {
                     color: Color(0xFF160E73)), // Цвет текста заголовка
               ),
             ),
-            body: Center(
+            body: SingleChildScrollView(
+    child: Center(
                 child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -71,7 +72,9 @@ class _CategoriesPageState extends State<CategoriesPage> {
                         onTap: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => AddCategory(title: 'Wallet App')),
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    AddCategory(title: 'Wallet App')),
                           );
                         },
                         child: Container(
@@ -119,29 +122,51 @@ class _CategoriesPageState extends State<CategoriesPage> {
                                 return Container(
                                   margin: EdgeInsets.symmetric(
                                       horizontal: 30.0, vertical: 10.0),
-                                  height: 60,
-                                  decoration: BoxDecoration(
-                                    color: Color(0xFFF0EDFF),
-                                    borderRadius: BorderRadius.circular(15.0),
-                                    border: Border.all(
-                                      color: Color(0xFF160E73),
-                                    ),
-                                  ),
                                   child: Row(
                                     children: <Widget>[
-                                      Container(
-                                        padding: EdgeInsets.symmetric(
-                                            vertical: 10.0, horizontal: 25.0),
-                                        child: Align(
-                                          alignment: Alignment.centerLeft,
-                                          child: FittedBox(
-                                            fit: BoxFit.scaleDown,
-                                            child: Text(
-                                              category[0],
-                                              style: TextStyle(
-                                                fontSize: 20,
-                                                color: Color(0xFF160E73),
+                                      Expanded(
+                                        flex: 8,
+                                        child: Container(
+                                          height: 60,
+                                          decoration: BoxDecoration(
+                                            color: Color(0xFFF0EDFF),
+                                            borderRadius: BorderRadius.only(
+                                                topLeft: Radius.circular(20),
+                                                bottomLeft:
+                                                    Radius.circular(20)),
+                                            border: Border.all(
+                                              color: Color(0xFF160E73),
+                                            ),
+                                          ),
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 10.0, horizontal: 25.0),
+                                          child: Align(
+                                            alignment: Alignment.centerLeft,
+                                            child: FittedBox(
+                                              fit: BoxFit.scaleDown,
+                                              child: Text(
+                                                category[0],
+                                                style: TextStyle(
+                                                  fontSize: 20,
+                                                  color: Color(0xFF160E73),
+                                                ),
                                               ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 2,
+                                        child: Container(
+                                          height: 60,
+                                          decoration: BoxDecoration(
+                                            color: Color(int.parse(category[1])),
+                                            borderRadius: BorderRadius.only(
+                                                topRight: Radius.circular(20),
+                                                bottomRight:
+                                                    Radius.circular(20)),
+                                            border: Border.all(
+                                              color: Color(0XFF160E73),
                                             ),
                                           ),
                                         ),
@@ -219,7 +244,6 @@ class _CategoriesPageState extends State<CategoriesPage> {
                 //   ),
                 // ),
               ],
-            ))
-        ));
+            )))));
   }
 }
