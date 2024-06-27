@@ -56,7 +56,7 @@ Future<List<List<String>>> getCategoryListForShow() async {
   String query = '';
 
   query = '''
-    SELECT cat.name, cat.colour
+    SELECT cat.name, cat.colour, cat.category_id
       FROM tblCategory as cat
       GROUP BY cat.category_id;
   ''';
@@ -68,7 +68,8 @@ Future<List<List<String>>> getCategoryListForShow() async {
   categories.forEach((category) {
     String name = category['name'];
     String colour = category['colour'];
-    categoryList.add([name, colour]);
+    String categoryId = category['category_id'].toString();
+    categoryList.add([name, colour, categoryId]);
   });
   print(categoryList);
   return categoryList;
@@ -94,4 +95,29 @@ Future<void> deleteCategoryFromDatabase(String categoryName) async {
   await database.transaction((txn) async {
     await txn.rawDelete(query);
   });
+}
+
+Future<List<List<String>>> getCategoryWasteList(int categoryId) async {
+  Database database = await openDatabase(join(await getDatabasesPath(), 'wallet_db.db'));
+  String query = '';
+
+  query = '''
+    SELECT w.sum, w.date
+      FROM tblWaste as w
+      JOIN tblCategory as cat ON cat.category_id = w.category_id
+      WHERE category_id = "$categoryId"
+      GROUP BY cat.category_id;
+  ''';
+
+  List<Map<String, dynamic>> categories = await database.rawQuery(query);
+
+  List<List<String>> categoryList = [];
+
+  categories.forEach((category) {
+    String sum = category['sum'];
+    String date = category['date'];
+    categoryList.add([sum, date]);
+  });
+  print(categoryList);
+  return categoryList;
 }

@@ -134,7 +134,8 @@ class _MyHomePageState extends State<MyHomePage> {
             style: TextStyle(color: Color(0xFF160E73)), // Цвет текста заголовка
           ),
         ),
-        body: Center(
+        body: SingleChildScrollView(
+    child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -401,7 +402,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ],
           ),
-        ),
+        ),)
       ),
     );
   }

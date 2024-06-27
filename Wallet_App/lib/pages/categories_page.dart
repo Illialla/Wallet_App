@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wallet_app/db_controllers/categories_data.dart';
 import 'package:wallet_app/pages/add_new_category.dart';
+import 'package:wallet_app/pages/waste_in_chosen_category.dart';
 
 class CategoriesPage extends StatefulWidget {
   const CategoriesPage({super.key, required this.title});
@@ -37,6 +38,9 @@ class _CategoriesPageState extends State<CategoriesPage> {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.purpleAccent),
           useMaterial3: true,
         ),
+        routes: {
+          '/categoryWastePage': (context) => WasteInCategory(title: 'Wallet App'), // TestPage здесь должен быть ваш виджет для этой страницы
+        },
         home: Scaffold(
             // home: const MyHomePage(title: 'Wallet App'),
             // extendBodyBehindAppBar: true,
@@ -49,8 +53,8 @@ class _CategoriesPageState extends State<CategoriesPage> {
               ),
             ),
             body: SingleChildScrollView(
-    child: Center(
-                child: Column(
+                child: Center(
+                    child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
@@ -102,86 +106,99 @@ class _CategoriesPageState extends State<CategoriesPage> {
                     ])),
 
                 Container(
-                  child: FutureBuilder<List<List<String>>>(
-                    future: getCategoryListForShow(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return CircularProgressIndicator(); // Показываем индикатор загрузки, пока данные загружаются
-                      } else {
-                        if (snapshot.hasError) {
-                          return Text('Error: ${snapshot.error}');
+                    child: FutureBuilder<List<List<String>>>(
+                      future: getCategoryListForShow(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return CircularProgressIndicator(); // Показываем индикатор загрузки, пока данные загружаются
                         } else {
-                          if (snapshot.data == null) {
-                            return Text(
-                                'No data available'); // Если данные не загружены, показываем сообщение
+                          if (snapshot.hasError) {
+                            return Text('Error: ${snapshot.error}');
                           } else {
-                            return Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: snapshot.data!.map((category) {
-                                return Container(
-                                  margin: EdgeInsets.symmetric(
-                                      horizontal: 30.0, vertical: 10.0),
-                                  child: Row(
-                                    children: <Widget>[
-                                      Expanded(
-                                        flex: 8,
-                                        child: Container(
-                                          height: 60,
-                                          decoration: BoxDecoration(
-                                            color: Color(0xFFF0EDFF),
-                                            borderRadius: BorderRadius.only(
-                                                topLeft: Radius.circular(20),
-                                                bottomLeft:
-                                                    Radius.circular(20)),
-                                            border: Border.all(
-                                              color: Color(0xFF160E73),
+                            if (snapshot.data == null) {
+                              return Text(
+                                  'No data available'); // Если данные не загружены, показываем сообщение
+                            } else {
+                              return Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: snapshot.data!.map((category) {
+                                  String categoryId = category[2];
+                                  return
+                                    GestureDetector(
+                                      onTap: () {
+                                    Navigator.pushNamed(context, '/categoryWastePage', arguments:{
+                                    'categoryId': categoryId.toString(),
+                                    'categoryName': category[0],
+                                    });
+                                  },
+                                  child: Container(
+                                    margin: EdgeInsets.symmetric(
+                                        horizontal: 30.0, vertical: 10.0),
+                                    child: Row(
+                                      children: <Widget>[
+                                        Expanded(
+                                          flex: 8,
+                                          child: Container(
+                                            height: 60,
+                                            decoration: BoxDecoration(
+                                              color: Color(0xFFF0EDFF),
+                                              borderRadius: BorderRadius.only(
+                                                  topLeft: Radius.circular(20),
+                                                  bottomLeft:
+                                                      Radius.circular(20)),
+                                              border: Border.all(
+                                                color: Color(0xFF160E73),
+                                              ),
                                             ),
-                                          ),
-                                          padding: EdgeInsets.symmetric(
-                                              vertical: 10.0, horizontal: 25.0),
-                                          child: Align(
-                                            alignment: Alignment.centerLeft,
-                                            child: FittedBox(
-                                              fit: BoxFit.scaleDown,
-                                              child: Text(
-                                                category[0],
-                                                style: TextStyle(
-                                                  fontSize: 20,
-                                                  color: Color(0xFF160E73),
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: 10.0,
+                                                horizontal: 25.0),
+                                            child: Align(
+                                              alignment: Alignment.centerLeft,
+                                              child: FittedBox(
+                                                fit: BoxFit.scaleDown,
+                                                child: Text(
+                                                  category[0],
+                                                  style: TextStyle(
+                                                    fontSize: 20,
+                                                    color: Color(0xFF160E73),
+                                                  ),
                                                 ),
                                               ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                      Expanded(
-                                        flex: 2,
-                                        child: Container(
-                                          height: 60,
-                                          decoration: BoxDecoration(
-                                            color: Color(int.parse(category[1])),
-                                            borderRadius: BorderRadius.only(
-                                                topRight: Radius.circular(20),
-                                                bottomRight:
-                                                    Radius.circular(20)),
-                                            border: Border.all(
-                                              color: Color(0XFF160E73),
+                                        Expanded(
+                                          flex: 2,
+                                          child: Container(
+                                            height: 60,
+                                            decoration: BoxDecoration(
+                                              color:
+                                                  Color(int.parse(category[1])),
+                                              borderRadius: BorderRadius.only(
+                                                  topRight: Radius.circular(20),
+                                                  bottomRight:
+                                                      Radius.circular(20)),
+                                              border: Border.all(
+                                                color: Color(0XFF160E73),
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              }).toList(),
-                            );
+                                      ],
+                                    ),
+                                  ));
+                                }).toList(),
+                              );
+                            }
                           }
                         }
-                      }
-                    },
+                      },
+                    ),
                   ),
-                ),
+
                 // Container(
                 //   child: Align(
                 //     alignment: Alignment.bottomCenter,
