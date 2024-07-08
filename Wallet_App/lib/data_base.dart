@@ -3,7 +3,7 @@ import 'package:path/path.dart';
 
 Future<void> createDatabase() async {
   // Откройте соединение с базой данных:
-  Database database = await openDatabase(join(await getDatabasesPath(), 'wallet_db.db'), version: 2,
+  Database database = await openDatabase(join(await getDatabasesPath(), 'wallet_database2.db'), version: 1,
   onCreate: (Database db, int version) async {
     // создание
     await db.execute('''
@@ -20,18 +20,16 @@ Future<void> createDatabase() async {
             category_id INTEGER NOT NULL,
             sum REAL NOT NULL,
             date DATE NOT NULL,
+            description VARCHAR(255) NOT NULL,
             FOREIGN KEY (category_id) REFERENCES tblCategory(category_id)
           );
         ''');
 
     await db.execute('''
           INSERT INTO tblCategory (name, colour) VALUES 
-          ('Еда', '0xFFACA5F7'), ('Транспорт', '0xFFA5F7D5'), ('Прочее', '0xFFFF88BA');
+          ('Без категории', '0xFF919191');
         ''');
 
-    await db.execute('''
-          INSERT INTO tblWaste (category_id, sum, date) VALUES 
-          (1, 550, '2024-05-25'), (2, 750, '2024-05-25'), (2, 450, '2024-05-30'), (3, 415, '2024-05-30');
-        ''');
-  });
+  }
+  );
 }

@@ -4,16 +4,16 @@ import 'package:wallet_app/db_controllers/categories_data.dart';
 import 'package:wallet_app/pages/categories_page.dart';
 import 'package:wallet_app/pages/main_page.dart';
 
-class AddCategory extends StatefulWidget {
-  const AddCategory({super.key, required this.title});
+class EditCategory extends StatefulWidget {
+  const EditCategory({super.key, required this.title});
 
   final String title;
 
   @override
-  State<AddCategory> createState() => _AddCategoryState();
+  State<EditCategory> createState() => _EditCategoryState();
 }
 
-class _AddCategoryState extends State<AddCategory> {
+class _EditCategoryState extends State<EditCategory> {
   @override
   String categoryName = '';
   String categoryColour = '';
@@ -31,19 +31,35 @@ class _AddCategoryState extends State<AddCategory> {
   }
 
   Widget build(BuildContext context) {
+    final Map<String, dynamic>? arguments =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
+    // print(arguments);
+
+    String? categoryId = arguments?['categoryId'] as String?;
+    int newCategoryId = int.tryParse(categoryId ?? '') ?? 0;
+    String? currentCategoryName = arguments?['categoryName'] as String?;
+    String? currentCategoryColour = arguments?['categoryColour'] as String?;
+    // currentColor == Color(int.tryParse(currentCategoryColour ?? '') ?? 0);
+    // print("Тут $currentColor");
+    TextEditingController textController =
+        TextEditingController(text: currentCategoryName);
+
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.purpleAccent),
         useMaterial3: true,
       ),
+      routes: {
+        '/categoriesPage': (context) => CategoriesPage(title: 'Wallet App'),
+      },
       home: Scaffold(
         // home: const MyHomePage(title: 'Wallet App'),
         // extendBodyBehindAppBar: true,
         appBar: AppBar(
           backgroundColor: const Color(0xFFD2C8FF), // Цвет фона заголовка
           title: const Text(
-            'Новая категория',
+            'Редактирование категории',
             style: TextStyle(color: Color(0xFF160E73)), // Цвет текста заголовка
           ),
           leading: IconButton(
@@ -66,7 +82,7 @@ class _AddCategoryState extends State<AddCategory> {
                   // crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
                     Text(
-                      'Какую категорию вы бы хотели добавить?',
+                      'Как бы вы хотели изменить название категории?',
                       style: TextStyle(
                         fontWeight: FontWeight.w500,
                         fontSize: 23,
@@ -80,6 +96,7 @@ class _AddCategoryState extends State<AddCategory> {
                   height: 50,
                   margin: EdgeInsets.fromLTRB(30, 0, 30, 20),
                   child: TextField(
+                    controller: textController,
                     onChanged: (value) {
                       categoryName =
                           value; // Сохраняем введённое пользователем название категории
@@ -144,8 +161,8 @@ class _AddCategoryState extends State<AddCategory> {
                           child: Text(
                             ' ',
                             style: TextStyle(
-                              fontSize: 20,
-                              color: Color(0xFF160E73),
+                              fontSize: 18,
+                              color: Color(0xFF919191),
                             ),
                           ),
                         ),
@@ -164,7 +181,7 @@ class _AddCategoryState extends State<AddCategory> {
                 ],
               ),
               Container(
-                margin: EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
+                margin: EdgeInsets.fromLTRB(30, 50, 30, 10),
                 height: 50,
                 width: 200,
                 decoration: BoxDecoration(
@@ -179,21 +196,12 @@ class _AddCategoryState extends State<AddCategory> {
                   onTap: () {
                     setState(() {
                       categoryColour = currentColor.toString().substring(6, 16);
-                      print(categoryColour);
-                      addCategoryToDatabase(categoryName, categoryColour);
-                      // Navigator.pushReplacement(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //     builder: (context) => MainScreen(
-                      //       title: 'Wallet App',
-                      //     ),
-                      //   ),
-                      // );
-                      Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  MainScreen(title: 'Wallet App', selectedIdx: 1,)));
+                      print("Конечный цвет $categoryColour");
+                      print("Конечное название $categoryName");
+                      print("Конечный айди $newCategoryId");
+                      editCategory(newCategoryId, categoryName, categoryColour);
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => CategoriesPage(title: 'Wallet App')));
+
 
                       // _MainScreenState mainScreenState = context.findAncestorStateOfType<MainScreen>(); // Получаем экземпляр состояния MainScreen
                       // mainScreenState._onItemTapped(1); // Переключение на CategoriesPage
@@ -204,7 +212,7 @@ class _AddCategoryState extends State<AddCategory> {
                     child: FittedBox(
                       fit: BoxFit.scaleDown,
                       child: Text(
-                        'Создать',
+                        'Обновить',
                         style: TextStyle(
                           fontSize: 20,
                           color: Color(0xFF160E73),

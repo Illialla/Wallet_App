@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.purpleAccent),
         useMaterial3: true,
       ),
-      home: const MainScreen(title: 'Wallet App'),
+      home: const MainScreen(title: 'Wallet App', selectedIdx: 0),
     );
   }
 }

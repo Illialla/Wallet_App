@@ -42,7 +42,7 @@ class _TestPageState extends State<TestPage> {
             ),
           ),
           body: Center(
-            child: Text('Selected category ID: $categoryId'),
+            child: Text('Test page!'),
           )
           // body: SingleChildScrollView(
           //     child: Center(

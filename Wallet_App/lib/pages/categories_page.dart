@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:wallet_app/db_controllers/categories_data.dart';
 import 'package:wallet_app/pages/add_new_category.dart';
 import 'package:wallet_app/pages/waste_in_chosen_category.dart';
+import 'package:wallet_app/pages/edit_category.dart';
+import 'package:wallet_app/widgets/confirm_window.dart';
+import 'package:wallet_app/pages/test_page.dart';
 
 class CategoriesPage extends StatefulWidget {
   const CategoriesPage({super.key, required this.title});
@@ -30,6 +33,12 @@ class _CategoriesPageState extends State<CategoriesPage> {
     '12': 'декабрь'
   };
 
+  void ConfirmDelete(BuildContext context, String categoryId) {
+    showDialog(
+        context: context,
+        builder: (BuildContext ctx) {
+      return ConfirmWindow(categoryId);});}
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -39,7 +48,10 @@ class _CategoriesPageState extends State<CategoriesPage> {
           useMaterial3: true,
         ),
         routes: {
-          '/categoryWastePage': (context) => WasteInCategory(title: 'Wallet App'), // TestPage здесь должен быть ваш виджет для этой страницы
+          '/categoryWastePage': (context) => WasteInCategory(title: 'Wallet App'),
+          '/editCategoryPage': (context) => EditCategory(title: 'Wallet App'),
+          '/addCategoryPage': (context) => AddCategory(title: 'Wallet App'),
+          '/categoriesPage': (context) => CategoriesPage(title: 'Wallet App'),
         },
         home: Scaffold(
             // home: const MyHomePage(title: 'Wallet App'),
@@ -80,6 +92,11 @@ class _CategoriesPageState extends State<CategoriesPage> {
                                 builder: (context) =>
                                     AddCategory(title: 'Wallet App')),
                           );
+                          // Navigator.pushReplacementNamed(context, '/editCategoryPage', arguments:{
+                          //   'categoryId': "1",
+                          //   'categoryName': "1",
+                          //   'categoryColour': "1",
+                          // },);
                         },
                         child: Container(
                           height: 50,
@@ -126,20 +143,20 @@ class _CategoriesPageState extends State<CategoriesPage> {
                                 children: snapshot.data!.map((category) {
                                   String categoryId = category[2];
                                   return
-                                    GestureDetector(
-                                      onTap: () {
-                                    Navigator.pushNamed(context, '/categoryWastePage', arguments:{
-                                    'categoryId': categoryId.toString(),
-                                    'categoryName': category[0],
-                                    });
-                                  },
-                                  child: Container(
+                                  Container(
                                     margin: EdgeInsets.symmetric(
                                         horizontal: 30.0, vertical: 10.0),
                                     child: Row(
                                       children: <Widget>[
                                         Expanded(
-                                          flex: 8,
+                                          flex: 75,
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          Navigator.pushReplacementNamed(context, '/categoryWastePage', arguments:{
+                                            'categoryId': categoryId.toString(),
+                                            'categoryName': category[0],
+                                          });
+                                        },
                                           child: Container(
                                             height: 60,
                                             decoration: BoxDecoration(
@@ -169,27 +186,70 @@ class _CategoriesPageState extends State<CategoriesPage> {
                                               ),
                                             ),
                                           ),
-                                        ),
+                                        )),
                                         Expanded(
-                                          flex: 2,
+                                          flex: 25,
                                           child: Container(
                                             height: 60,
                                             decoration: BoxDecoration(
-                                              color:
-                                                  Color(int.parse(category[1])),
+                                              color: Color(int.parse(category[1])),
                                               borderRadius: BorderRadius.only(
-                                                  topRight: Radius.circular(20),
-                                                  bottomRight:
-                                                      Radius.circular(20)),
+                                                topRight: Radius.circular(20),
+                                                bottomRight: Radius.circular(20),
+                                              ),
                                               border: Border.all(
                                                 color: Color(0XFF160E73),
                                               ),
                                             ),
+                                            child: Container(
+                                              // color: Colors.greenAccent,
+                                              margin: EdgeInsets.only(right: 10),
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                                              children: [
+                                                Container(
+                                            // color: Colors.white,
+                                                child: SizedBox(
+                                                  width: 35, // Ширина иконки
+                                                  height: 25, // Высота иконки
+                                                  child: IconButton(
+                                                    onPressed: () {
+                                                      print(category[1]);
+                                                      Navigator.pushNamed(context, '/editCategoryPage', arguments:{
+                                                        'categoryId': categoryId.toString(),
+                                                        'categoryName': category[0],
+                                                        'categoryColour': category[1],
+                                                      },);
+                                                    },
+                                                    icon: Icon(Icons.edit), // Иконка для редактирования
+                                                    color: Colors.black, // Цвет иконки
+                                                  ),
+                                                )),
+                                              Visibility(
+                                                visible: category[0] != 'Без категории',
+                                                child: Container(
+                                                    // color: Colors.greenAccent,
+                                                    child: SizedBox(
+                                                  width: 35, // Ширина иконки
+                                                  height: 25, // Высота иконки
+                                                  child: IconButton(
+                                                    onPressed: () {
+                                                      ConfirmDelete(context, categoryId); // Функция для удаления категории
+                                                      // Navigator.pushNamed(context, '/categoriesPage', arguments:{
+                                                      // },);
+                                                    },
+                                                    icon: Icon(Icons.delete_outline), // Иконка для удаления
+                                                    color: Colors.black, // Цвет иконки
+                                                  ),
+                                                ))),
+                                              ],
+                                            ),)
                                           ),
                                         ),
                                       ],
                                     ),
-                                  ));
+                                  );
                                 }).toList(),
                               );
                             }

@@ -7,15 +7,25 @@ class DonutChart extends StatelessWidget {
   final String currentYear;
   final String _selectedBlock;
 
-  DonutChart(this.dayString, this.monthString, this.currentYear, this._selectedBlock);
+  DonutChart(
+      this.dayString, this.monthString, this.currentYear, this._selectedBlock);
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: getCategoryList(dayString, monthString, currentYear.toString(), _selectedBlock),
+      future: getCategoryList(
+          dayString, monthString, currentYear.toString(), _selectedBlock),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           List<List<String>> categoryList = snapshot.data as List<List<String>>;
-
+          if (categoryList.isEmpty) {
+            return Center(
+                child: Container(
+                  margin: EdgeInsets.fromLTRB(35.0, 20.0, 35.0, 20.0),
+              child: Text('В данный период не было никаких трат!',
+                  style: TextStyle(fontSize: 20, color: Color(0xFF919191)),
+                  textAlign: TextAlign.center),
+            ));
+          }
           List<double> divisions = [];
           List<Color> colors = [];
 
@@ -33,19 +43,23 @@ class DonutChart extends StatelessWidget {
                   height: 200,
                   child: CustomPaint(
                     painter: DonutChartPainter(
-                      divisions: divisions, // Передаем данные для деления диаграммы
+                      divisions:
+                          divisions, // Передаем данные для деления диаграммы
                       colors: colors, // Передаем цвета для делений
-                      total: categoryList.fold<double>(0, (sum, item) => sum + double.parse(item[2])).toDouble(),
+                      total: categoryList
+                          .fold<double>(
+                              0, (sum, item) => sum + double.parse(item[2]))
+                          .toDouble(),
                     ),
                   ),
                 ),
               ],
             ),
           );
-
         } else {
           return Center(
-            child: CircularProgressIndicator(), // Индикатор загрузки, пока данные загружаются
+            child:
+                CircularProgressIndicator(), // Индикатор загрузки, пока данные загружаются
           );
         }
       },
@@ -58,7 +72,8 @@ class DonutChartPainter extends CustomPainter {
   final List<Color> colors;
   final double total;
 
-  DonutChartPainter({required this.divisions, required this.colors, required this.total});
+  DonutChartPainter(
+      {required this.divisions, required this.colors, required this.total});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -69,7 +84,9 @@ class DonutChartPainter extends CustomPainter {
     for (int i = 0; i < divisions.length; i++) {
       double sweepAngle = divisions[i] / total * 2 * 3.14;
       canvas.drawArc(
-        Rect.fromCircle(center: Offset(size.width / 2, size.height / 2), radius: outerRadius),
+        Rect.fromCircle(
+            center: Offset(size.width / 2, size.height / 2),
+            radius: outerRadius),
         startAngle,
         sweepAngle,
         true,

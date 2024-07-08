@@ -14,12 +14,15 @@ class WasteInCategory extends StatefulWidget {
 
 class _WasteInCategoryState extends State<WasteInCategory> {
   @override
-
   Widget build(BuildContext context) {
-    final Map<String, dynamic>? arguments = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
+    final Map<String, dynamic>? arguments =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
 
     String? categoryId = arguments?['categoryId'] as String?;
     String? categoryName = arguments?['categoryName'] as String?;
+
+    int newCategoryId = int.tryParse(categoryId ?? '') ?? 0;
+    print("id $newCategoryId");
 
     return MaterialApp(
       title: 'Flutter Demo',
@@ -27,6 +30,9 @@ class _WasteInCategoryState extends State<WasteInCategory> {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.purpleAccent),
         useMaterial3: true,
       ),
+      routes: {
+        '/categoriesPage': (context) => CategoriesPage(title: 'Wallet App'),
+      },
       home: Scaffold(
           // home: const MyHomePage(title: 'Wallet App'),
           // extendBodyBehindAppBar: true,
@@ -40,83 +46,107 @@ class _WasteInCategoryState extends State<WasteInCategory> {
             leading: IconButton(
               icon: Icon(Icons.arrow_back),
               onPressed: () {
-                Navigator.pop(context); // Возвращение на предыдущую страницу
+                Navigator.pushNamed(context, '/categoriesPage', arguments:{
+                },); // Возвращение на предыдущую страницу
               },
             ),
           ),
-          body: Center(
-            child: Text('Selected category ID: $categoryId'),
-          )
-          // body: SingleChildScrollView(
-          //     child: Center(
-          //       child: Column(
-          //         mainAxisAlignment: MainAxisAlignment.start,
-          //         crossAxisAlignment: CrossAxisAlignment.center,
-          //         children: <Widget>[
-          //           Container(
-          //             margin: EdgeInsets.fromLTRB(35, 30, 35, 20),
-          //             child: Column(
-          //               children: <Widget>[
-          //                 Text(
-          //                   'Какую категорию вы бы хотели добавить?',
-          //                   style: TextStyle(
-          //                     fontWeight: FontWeight.w500,
-          //                     fontSize: 23,
-          //                     color: Color(0xFF160E73),
-          //                   ),
-          //                 ),
-          //               ],
-          //             ),
-          //           ),
-          //           Container(
-          //             margin:
-          //             EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
-          //             height: 50,
-          //             width: 200,
-          //             decoration: BoxDecoration(
-          //               color: Color(0xFFD2C8FF),
-          //               borderRadius: BorderRadius.circular(25.0),
-          //               border: Border.all(
-          //                 color: Color(0xFF160E73),
-          //               ),
-          //             ),
-          //             padding:
-          //             EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-          //             child: GestureDetector(
-          //               onTap: () {
-          //                 setState(() {
-          //                   Navigator.pushReplacement(
-          //                     context,
-          //                     MaterialPageRoute(
-          //                       builder: (context) => MainScreen(
-          //                           title: 'Wallet App',
-          //                       ),
-          //                     ),
-          //                   );
-          //                   // _MainScreenState mainScreenState = context.findAncestorStateOfType<MainScreen>(); // Получаем экземпляр состояния MainScreen
-          //                   // mainScreenState._onItemTapped(1); // Переключение на CategoriesPage
-          //                 });
-          //               },
-          //               child: Align(
-          //                 alignment: Alignment.center,
-          //                 child: FittedBox(
-          //                   fit: BoxFit.scaleDown,
-          //                   child: Text(
-          //                     'Создать',
-          //                     style: TextStyle(
-          //                       fontSize: 20,
-          //                       color: Color(0xFF160E73),
-          //                     ),
-          //                   ),
-          //                 ),
-          //               ),
-          //             ),
-          //           ),
-          //         ],
-          //       ),
-          //     )),
+          body: SingleChildScrollView(
+              child: Center(
+                  child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              // Text('Selected category ID: $categoryId'),
+              Container(
+                  child: FutureBuilder<List<List<String>>>(
+                      future: getCategoryWasteList(newCategoryId),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return CircularProgressIndicator(); // Показываем индикатор загрузки, пока данные загружаются
+                        } else {
+                          if (snapshot.hasError) {
+                            return Text('Error: ${snapshot.error}');
+                          } else {
+                            if (snapshot.data == null) {
+                              return Text(
+                                  'No data available'); // Если данные не загружены, показываем сообщение
+                            } else {
+                              return Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: snapshot.data!.map((category) {
+                                    return Container(
+                                      margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                        decoration: BoxDecoration(
+                                          border: Border(
+                                            bottom: BorderSide(
+                                              color: Color(0xFF919191),
+                                            ),
+                                          ),
+                                        ),
 
-          ),
+                                        child: Column(children: <Widget>[
+                                      Align(
+                                          alignment: Alignment.centerLeft,
+                                          child: Container(
+                                              margin: EdgeInsets.fromLTRB(
+                                                  20, 25, 20, 5),
+                                              child: Text(
+                                                  "${category[1]}",
+                                                  style: TextStyle(
+                                                    fontSize: 23,
+                                                    color: Color(0xFF160E73),
+                                                    fontWeight: FontWeight.w500
+                                                  )))),
+                                      Container(
+                                          margin:
+                                              EdgeInsets.fromLTRB(20, 5, 20, 5),
+                                          padding:
+                                              EdgeInsets.fromLTRB(0, 0, 10, 0),
+                                          child: Row(children: <Widget>[
+                                            Expanded(
+                                              flex:7,
+                                              child: Align(
+                                                alignment: Alignment.centerLeft,
+                                                child: FittedBox(
+                                                  fit: BoxFit.scaleDown,
+                                                  child: Text(
+                                                    "${category[2]}",
+                                                    style: TextStyle(
+                                                      fontSize: 19,
+                                                      color: Color(0xFF160E73),
+                                                    ))),
+                                              ),
+                                            ),
+                                            Expanded(
+                                              flex: 2,
+                                              child: Align(
+                                                alignment: Alignment.centerRight,
+                                                child: FittedBox(
+                                                  fit: BoxFit.scaleDown,
+                                                  child: Text("${category[0]}",
+                                                    style: TextStyle(
+                                                      fontSize: 19,
+                                                      color: Color(0xFF160E73),
+                                                    ))),
+                                              ),
+                                            ),
+                                          ])),
+                                        Container(
+                                          margin: EdgeInsetsDirectional.only(top: 10),
+                                          width: double.infinity,
+                                          height: 1,
+                                        )
+                                    ]));
+                                  }).toList());
+                            }
+                          }
+                        }
+                      }))
+            ],
+          )))),
     );
   }
 }
