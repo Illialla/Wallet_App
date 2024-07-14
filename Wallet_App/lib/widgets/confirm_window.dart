@@ -2,10 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:wallet_app/db_controllers/categories_data.dart';
 import 'package:wallet_app/pages/main_page.dart';
 
-class ConfirmWindow extends StatelessWidget {
+class ConfirmWindow extends StatefulWidget {
   final String categoryId;
+
   ConfirmWindow(this.categoryId);
 
+  @override
+  _ConfirmWindowState createState() => _ConfirmWindowState();
+}
+
+class _ConfirmWindowState extends State<ConfirmWindow> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -22,9 +28,9 @@ class ConfirmWindow extends StatelessWidget {
         TextButton(
             onPressed: () {
               // Remove the box
-              deleteCategory(categoryId);
-
+              deleteCategory(widget.categoryId);
               // Close the dialog
+              setState(() {});
               Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
@@ -32,6 +38,7 @@ class ConfirmWindow extends StatelessWidget {
                             title: 'Wallet App',
                             selectedIdx: 1,
                           )));
+              setState(() {});
             },
             child: const Text(
               'Да',

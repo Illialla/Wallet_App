@@ -296,12 +296,12 @@ class _MyHomePageState extends State<MyHomePage> {
               Container(
                 margin: EdgeInsets.fromLTRB(20.0, 30.0, 20.0, 70.0),
                 // margin: EdgeInsets.symmetric(horizontal: 20.0, vertical: 70.0),
-                child: DonutChart(day.toString(), months.keys.elementAt(currentMonthIndex),
+                child: DonutChart(dayString, months.keys.elementAt(currentMonthIndex),
                     currentYear.toString(), _selectedBlock),
               ),
               Container(
                 child: FutureBuilder<List<List<String>>>(
-                  future: getCategoryList(day.toString(), months.keys.elementAt(currentMonthIndex),
+                  future: getCategoryList(dayString, months.keys.elementAt(currentMonthIndex),
                       currentYear.toString(), _selectedBlock),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {

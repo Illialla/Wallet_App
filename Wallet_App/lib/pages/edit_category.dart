@@ -75,7 +75,14 @@ class _EditCategoryState extends State<EditCategory> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              Container(
+          Visibility(
+          visible: categoryId == '1',
+            child: SizedBox(
+              height: 25,
+            )),
+              Visibility(
+          visible: categoryId != '1',
+          child: Container(
                 margin: EdgeInsets.fromLTRB(35, 30, 35, 20),
                 child: Column(
                   // mainAxisAlignment: MainAxisAlignment.start,
@@ -91,15 +98,19 @@ class _EditCategoryState extends State<EditCategory> {
                     ),
                   ],
                 ),
-              ),
-              Container(
+              )),
+              Visibility(
+                visible: categoryId != '1',
+                child: Container(
                   height: 50,
                   margin: EdgeInsets.fromLTRB(30, 0, 30, 20),
                   child: TextField(
                     controller: textController,
                     onChanged: (value) {
-                      categoryName =
-                          value; // Сохраняем введённое пользователем название категории
+                      print("Cur name: $currentCategoryName");
+                      if (value != categoryName)
+                        currentCategoryName = value;
+                      // else categoryName = currentCategoryName!;
                     },
                     decoration: InputDecoration(
                       // border: OutlineInputBorder(),
@@ -110,7 +121,7 @@ class _EditCategoryState extends State<EditCategory> {
                           EdgeInsets.symmetric(vertical: 15.0, horizontal: 20),
                       hintText: 'Название категории',
                     ),
-                  )),
+                  ))),
               Container(
                 margin: EdgeInsets.fromLTRB(35, 10, 35, 20),
                 child: Column(
@@ -143,7 +154,7 @@ class _EditCategoryState extends State<EditCategory> {
                     },
                     child: Container(
                       margin: EdgeInsets.symmetric(
-                          horizontal: 30.0, vertical: 10.0),
+                          horizontal: 30.0, vertical: 5.0),
                       height: 50,
                       decoration: BoxDecoration(
                         color: currentColor,
@@ -181,7 +192,7 @@ class _EditCategoryState extends State<EditCategory> {
                 ],
               ),
               Container(
-                margin: EdgeInsets.fromLTRB(30, 50, 30, 10),
+                margin: EdgeInsets.fromLTRB(30, 30, 30, 10),
                 height: 50,
                 width: 200,
                 decoration: BoxDecoration(
@@ -197,11 +208,14 @@ class _EditCategoryState extends State<EditCategory> {
                     setState(() {
                       categoryColour = currentColor.toString().substring(6, 16);
                       print("Конечный цвет $categoryColour");
-                      print("Конечное название $categoryName");
+                      print("Конечное название $currentCategoryName");
                       print("Конечный айди $newCategoryId");
-                      editCategory(newCategoryId, categoryName, categoryColour);
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => CategoriesPage(title: 'Wallet App')));
-
+                      editCategory(newCategoryId, currentCategoryName!, categoryColour);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  CategoriesPage(title: 'Wallet App')));
 
                       // _MainScreenState mainScreenState = context.findAncestorStateOfType<MainScreen>(); // Получаем экземпляр состояния MainScreen
                       // mainScreenState._onItemTapped(1); // Переключение на CategoriesPage

@@ -41,6 +41,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
 
   @override
   Widget build(BuildContext context) {
+    setState(() {});
     return MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
@@ -227,7 +228,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
                                                   ),
                                                 )),
                                               Visibility(
-                                                visible: category[0] != 'Без категории',
+                                                visible: categoryId != '1',
                                                 child: Container(
                                                     // color: Colors.greenAccent,
                                                     child: SizedBox(
@@ -235,7 +236,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
                                                   height: 25, // Высота иконки
                                                   child: IconButton(
                                                     onPressed: () {
-                                                      ConfirmDelete(context, categoryId); // Функция для удаления категории
+                                                      ConfirmDelete(context, categoryId);
                                                       // Navigator.pushNamed(context, '/categoriesPage', arguments:{
                                                       // },);
                                                     },

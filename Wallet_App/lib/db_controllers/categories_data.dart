@@ -12,6 +12,7 @@ Future<List<List<String>>> getCategoryList(String day, String month, String year
       WHERE w.date = "$year-$month-$day"
       GROUP BY cat.category_id;
     ''';
+    print("$year-$month-$day");
   }
   else if(_selectedBlock=='month'){
     DateTime firstDay = DateTime(int.parse(year), int.parse(month));
@@ -120,30 +121,44 @@ Future<void> editCategory(int categoryId, String categoryName, String categoryCo
 }
 
 
-Future<List<List<String>>> getCategoryWasteList(int categoryId) async {
+Future<Map<String, List<List<String>>>> getCategoryWasteList(int categoryId) async {
+  // Ваш существующий код для получения данных из базы
   Database database = await openDatabase(join(await getDatabasesPath(), 'wallet_database2.db'));
-  String query = '';
-
-  query = '''
-    SELECT w.sum, w.date, w.description
-      FROM tblWaste as w
-      JOIN tblCategory as cat ON cat.category_id = w.category_id
-      WHERE w.category_id = "$categoryId";
+  String query = '''
+      SELECT w.sum, w.date, w.description 
+      FROM tblWaste as w 
+      JOIN tblCategory as cat ON cat.category_id = w.category_id 
+      WHERE w.category_id = "$categoryId"
+      ORDER BY w.date DESC;
   ''';
 
   List<Map<String, dynamic>> categories = await database.rawQuery(query);
-  print(categories);
-  List<List<String>> categoryList = [];
 
+  // Преобразование данных в список
+  List<List<String>> categoryList = [];
   categories.forEach((category) {
     String sum = category['sum'].toString();
-    String date = category['date'];
+    String date = (category['date']);
+    List<String> dateParts = date.split("-");
+    // Форматируем дату
+    String formatedDate = "${dateParts[2]}.${dateParts[1]}.${dateParts[0]}";
     String description = category['description'];
-    categoryList.add([sum, date, description]);
+    categoryList.add([sum, formatedDate, description]);
   });
 
-  print(categoryList);
-  return categoryList;
-
-
+  // Группировка данных по дате
+  Map<String, List<List<String>>> groupedData = {};
+  categoryList.forEach((category) {
+    String sum = category[0];
+    String date = category[1];
+    String description = category[2];
+    if (groupedData.containsKey(date)) {
+      groupedData[date]!.add([sum, date, description]);
+    } else {
+      groupedData[date] = [[sum, date, description]];
+    }
+  });
+  print(groupedData);
+  return groupedData;
 }
+

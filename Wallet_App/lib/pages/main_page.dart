@@ -25,12 +25,22 @@ class _MainScreenState extends State<MainScreen> {
 
   void initState(){
     super.initState();
+    setState(() {
+
+    });
     _selectedIndex = widget.selectedIdx;
   }
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+    });
+  }
+
+  void onDeleteCategory(String categoryId) {
+    setState(() {
+      // Удалить категорию из данных
+      // Тут ты можешь использовать нужный метод для обновления данных (например, setState или другой способ)
     });
   }
 
