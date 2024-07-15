@@ -3,6 +3,7 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:wallet_app/db_controllers/categories_data.dart';
 import 'package:wallet_app/pages/categories_page.dart';
 import 'package:wallet_app/pages/main_page.dart';
+import 'package:wallet_app/pages/edit_waste.dart';
 
 class WasteInCategory extends StatefulWidget {
   const WasteInCategory({super.key, required this.title});
@@ -31,7 +32,8 @@ class _WasteInCategoryState extends State<WasteInCategory> {
         useMaterial3: true,
       ),
       routes: {
-        '/categoriesPage': (context) => CategoriesPage(title: 'Wallet App'),
+        '/wastePage': (context) => EditWaste(title: 'Wallet App'),
+        '/categoriesPage': (context) => MainScreen(title: 'Wallet App', selectedIdx: 1,),
       },
       home: Scaffold(
           // home: const MyHomePage(title: 'Wallet App'),
@@ -117,7 +119,24 @@ class _WasteInCategoryState extends State<WasteInCategory> {
                                         children: category.value.map((item) {
                                           String sum = item[0];
                                           String description = item[2];
-                                          return Container(
+                                          String wasteId = item[3];
+                                          print(wasteId);
+                                          print(sum);
+                                          print(categoryName);
+                                          print(description);
+                                          print(category.key);
+                                          return GestureDetector(
+                                              onTap: () {
+                                            Navigator.pushReplacementNamed(context, '/wastePage', arguments:{
+                                              'wasteId': wasteId,
+                                              'categoryId': categoryId,
+                                              'wasteSum': sum,
+                                              'categoryName': categoryName,
+                                              'wasteDescription': description,
+                                              'wasteDate': category.key,
+                                            });
+                                          },
+                                          child: Container(
                                               decoration: BoxDecoration(
                                                 // color: Color(0xFFeeebff),
                                                 color: Color(0xFFeeebff),
@@ -161,7 +180,7 @@ class _WasteInCategoryState extends State<WasteInCategory> {
                                                             ))),
                                                   ),
                                                 ),
-                                              ]));
+                                              ])));
                                         }).toList(),
                                       ),
                                       SizedBox(

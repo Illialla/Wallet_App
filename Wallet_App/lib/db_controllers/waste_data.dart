@@ -34,17 +34,34 @@ Future<void> addWasteToDatabase(String categoryId, String wasteDate, String wast
     await txn.rawInsert(query);
   });
 }
-//
-// Future<void> deleteCategory(String categoryId) async {
-//   // Получаем путь к базе данных
-//   Database database = await openDatabase(join(await getDatabasesPath(), 'wallet_database.db'));
-//
-//   String query = 'DELETE FROM tblCategory WHERE category_id = "$categoryId"';
-//
-//   await database.transaction((txn) async {
-//     await txn.rawDelete(query);
-//   });
-// }
+
+Future<void> editWasteInDatabase(int categoryId, int wasteId, String sum, String date, String description) async {
+  // Получаем путь к базе данных
+  Database database = await openDatabase(join(await getDatabasesPath(), 'wallet_database2.db'));
+
+  await database.update(
+      'tblWaste',
+      {
+        'category_id': categoryId,
+        'sum': sum,
+        'date': date,
+        'description': description,
+      },
+      where: 'waste_id = $wasteId'
+  );
+
+}
+
+Future<void> deleteWaste(String wasteId) async {
+  // Получаем путь к базе данных
+  Database database = await openDatabase(join(await getDatabasesPath(), 'wallet_database2.db'));
+
+  String query = 'DELETE FROM tblWaste WHERE waste_id = "$wasteId"';
+
+  await database.transaction((txn) async {
+    await txn.rawDelete(query);
+  });
+}
 //
 //
 // Future<void> editCategory(int categoryId, String categoryName, String categoryColour) async {

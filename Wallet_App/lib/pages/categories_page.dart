@@ -37,7 +37,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
     showDialog(
         context: context,
         builder: (BuildContext ctx) {
-      return ConfirmWindow(categoryId);});}
+      return ConfirmWindow(categoryId, 'category');});}
 
   @override
   Widget build(BuildContext context) {

@@ -2,20 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:wallet_app/db_controllers/categories_data.dart';
 import 'package:wallet_app/db_controllers/waste_data.dart';
 import 'package:wallet_app/pages/categories_page.dart';
+import 'package:wallet_app/pages/waste_in_chosen_category.dart';
 import 'package:wallet_app/pages/main_page.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:wallet_app/widgets/confirm_window.dart';
 
-class AddWaste extends StatefulWidget {
-  const AddWaste({super.key, required this.title});
+class EditWaste extends StatefulWidget {
+  const EditWaste({super.key, required this.title});
 
   final String title;
 
   @override
-  State<AddWaste> createState() => _AddWasteState();
+  State<EditWaste> createState() => _EditWasteState();
 }
 
-class _AddWasteState extends State<AddWaste> {
+class _EditWasteState extends State<EditWaste> {
   @override
   // String wasteDate = '';
   // DateTime wasteDate = DateTime.now();
@@ -29,20 +31,13 @@ class _AddWasteState extends State<AddWaste> {
     initializeDateFormatting('ru').then((_) {
       formattedDate = DateFormat('dd MMMM yyyy', 'ru').format(wasteDate);
       // formattedDate = formattedDate.split(" ")[0];
+      // print("WASTEEEEEE 2: $formattedDate");
       saveDate = DateFormat('yyyy-MM-dd', 'ru').format(wasteDate);
       print("1 var - $formattedDate");
       print("2 var - $saveDate");
     });
   }
 
-  // List<String> data = getCategoriesForWaste();
-
-  // String? _selectedValue = 'Вариант 1';
-  // List<String> categories = [
-  //   'Категория 1',
-  //   'Категория 2',
-  //   'Категория 3'
-  // ];
   List<String> categories = [];
   List<String> categoriesIdx = [];
 
@@ -55,28 +50,35 @@ class _AddWasteState extends State<AddWaste> {
       nameList.add(value[0]);
       idxList.add(value[1]);
     }
-    // categories = nameList;
     categoriesIdx = idxList;
     return nameList;
   }
-  // String dropdownValue = categories.first;
-  // String categoryColour = '';
-  // Color currentColor = Color(0xFFD2C8FF);
-  // List<Color> currentColors = [Colors.yellow, Colors.red];
-  // bool showColorPicker = false;
-  // void changeColor(Color color) => setState(() => currentColor = color);
-  // void changeColors(List<Color> colors) =>
-  //     setState(() => currentColors = colors);
-  // void changeChosenColor(Color color) {
-  //   setState(() {
-  //     currentColor = color;
-  //     // showColorPicker = false;
-  //   });
-  // }
+
+  void ConfirmDelete(BuildContext context, String wasteId) {
+    showDialog(
+        context: context,
+        builder: (BuildContext ctx) {
+          return ConfirmWindow(wasteId, 'waste');});}
 
   Widget build(BuildContext context) {
+    final Map<String, dynamic>? arguments = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
+    String? wasteId = arguments?['wasteId'] as String?;
+    String? categoryId = arguments?['categoryId'] as String?;
+    int newWasteId = int.tryParse(wasteId ?? '') ?? 0;
+    int newCategoryId = int.tryParse(categoryId ?? '') ?? 0;
+    String? currentWasteDescription = arguments?['wasteDescription'] as String?;
+    String? currentCategoryName = arguments?['categoryName'] as String?;
+    String? currentWasteDate = arguments?['wasteDate'] as String?;
+    wasteDate = DateFormat('dd.MM.yyyy').parse(currentWasteDate!);
+    reformatDate(wasteDate);
+    // formattedDate = currentWasteDate!;
+    String? currentWasteSum = arguments?['wasteSum'] as String?;
+    // String? currentCategoryColour = arguments?['categoryColour'] as String?;
     // categories = getData();
     // String? _selectedValue = categories[0];
+    TextEditingController textController = TextEditingController(text: currentWasteDescription);
+    TextEditingController textSumController = TextEditingController(text: currentWasteSum);
+
     return FutureBuilder<List<String>>(
         future: getData(),
         builder: (context, snapshot) {
@@ -89,7 +91,11 @@ class _AddWasteState extends State<AddWaste> {
               categories = snapshot.data!;
               print("Категории: $categories");
               print("Айдишники: $categoriesIdx");
-              String? _selectedValue = null; // Теперь данные доступны для использования
+              String? _selectedValue = currentCategoryName; // Теперь данные доступны для использования
+
+              // print("WASTEEEEEE: $wasteDate");
+              reformatDate(wasteDate);
+              // wasteDate = currentWasteDate;
               int? selectedIndex;
               void initState() {
                 super.initState();
@@ -105,9 +111,10 @@ class _AddWasteState extends State<AddWaste> {
                       ColorScheme.fromSeed(seedColor: Colors.purpleAccent),
                   useMaterial3: true,
                 ),
-                // routes: {
-                //   '/mainPage': (context) => MainScreen(title: 'Wallet App'),
-                // },
+                routes: {
+                  // '/WastePage': (context) => WasteInCategory(title: 'Wallet App'),
+                  '/categoryWastePage': (context) => WasteInCategory(title: 'Wallet App'),
+                },
                 home: Scaffold(
                   // home: const MyHomePage(title: 'Wallet App'),
                   // extendBodyBehindAppBar: true,
@@ -115,9 +122,19 @@ class _AddWasteState extends State<AddWaste> {
                     backgroundColor:
                         const Color(0xFFD2C8FF), // Цвет фона заголовка
                     title: const Text(
-                      'Новая трата',
+                      'Редактирование траты',
                       style: TextStyle(
                           color: Color(0xFF160E73)), // Цвет текста заголовка
+                    ),
+                    leading: IconButton(
+                      icon: Icon(Icons.arrow_back),
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    CategoriesPage(title: 'Wallet App',))); // Возвращение на предыдущую страницу
+                      },
                     ),
                   ),
                   body: SingleChildScrollView(
@@ -146,9 +163,13 @@ class _AddWasteState extends State<AddWaste> {
                         Container(
                           margin: EdgeInsets.fromLTRB(30, 0, 30, 0),
                           child: TextField(
+                            controller: textController,
                             onChanged: (value) {
-                              wasteDescription =
-                                  value; // Сохраняем введённое пользователем название категории
+                              print("Cur description: $currentWasteDescription");
+                              if (value != wasteDescription)
+                                currentWasteDescription = value;
+                              // wasteDescription =
+                              //     value; // Сохраняем введённое пользователем название категории
                             },
                             decoration: InputDecoration(
                               // border: OutlineInputBorder(),
@@ -204,12 +225,6 @@ class _AddWasteState extends State<AddWaste> {
                                       color: Color(0xFF919191), width: 1),
                                 ),
                               ),
-                              // onSaved: (String? value) {
-                              //   setState(() {
-                              //     wasteCategory = value;
-                              //     print(wasteCategory);
-                              //   });
-                              // },
                               validator: (String? value) {
                                 if (value == null) {
                                   return 'Please select an option';
@@ -260,11 +275,11 @@ class _AddWasteState extends State<AddWaste> {
                                       firstDate: DateTime(1900),
                                       lastDate: DateTime(2100),
                                     );
-
                                     if (selectedDate != null) {
                                       setState(() {
                                         wasteDate = selectedDate;
                                         reformatDate(wasteDate);
+
                                         print("Мы выбрали дату: $wasteDate");
                                       });
                                     }
@@ -314,9 +329,13 @@ class _AddWasteState extends State<AddWaste> {
                             child: TextField(
                               textAlign: TextAlign.center,
                               keyboardType: TextInputType.number,
+                              controller: textSumController,
                               onChanged: (value) {
-                                wastePrice =
-                                    value; // Сохраняем введённое пользователем название категории
+                                print("Cur sum: $currentWasteSum");
+                                if (value != wastePrice)
+                                  currentWasteSum = value;
+                                // wastePrice =
+                                //     value; // Сохраняем введённое пользователем название категории
                               },
                               decoration: InputDecoration(
                                 // border: OutlineInputBorder(),
@@ -345,10 +364,15 @@ class _AddWasteState extends State<AddWaste> {
                               )
                             ]),
                         Container(
-                          margin: EdgeInsets.symmetric(
-                              horizontal: 100.0, vertical: 10.0),
+                          margin: EdgeInsets.fromLTRB(30, 10, 30, 30),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Container(
+                          // margin: EdgeInsets.symmetric(
+                          //     horizontal: 100.0, vertical: 10.0),
                           height: 50,
-                          width: 200,
+                          width: 150,
                           decoration: BoxDecoration(
                             color: Color(0xFFD2C8FF),
                             borderRadius: BorderRadius.circular(25.0),
@@ -362,13 +386,13 @@ class _AddWasteState extends State<AddWaste> {
                             onTap: () {
                               setState(() {
                                 // categoryColour = currentColor.toString().substring(6, 16);
-                                print("Данные: ${categoriesIdx[selectedIndex!]}, $saveDate, $wastePrice, $wasteDescription");
-                                addWasteToDatabase(categoriesIdx[selectedIndex!], saveDate, wasteDescription, wastePrice);
+                                print("Данные: $newWasteId, ${categoriesIdx[selectedIndex!]}, $currentWasteDescription, $currentCategoryName, $saveDate, $currentWasteSum");
+                                editWasteInDatabase(int.tryParse(categoriesIdx[selectedIndex!] ?? '') ?? 0, newWasteId, currentWasteSum!, saveDate, currentWasteDescription!);
                                 Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => MainScreen(
-                                            title: 'Wallet App', selectedIdx: 0,)));
+                                        builder: (context) => CategoriesPage(
+                                            title: 'Wallet App')));
                                 // Navigator.pushNamed(context, '/mainPage', arguments:{
                                 // },);
                                 // _MainScreenState mainScreenState = context.findAncestorStateOfType<MainScreen>(); // Получаем экземпляр состояния MainScreen
@@ -380,7 +404,7 @@ class _AddWasteState extends State<AddWaste> {
                               child: FittedBox(
                                 fit: BoxFit.scaleDown,
                                 child: Text(
-                                  'Добавить',
+                                  'Обновить',
                                   style: TextStyle(
                                     fontSize: 20,
                                     color: Color(0xFF160E73),
@@ -390,6 +414,48 @@ class _AddWasteState extends State<AddWaste> {
                             ),
                           ),
                         ),
+                          Container(
+                            // margin: EdgeInsets.symmetric(
+                            //     horizontal: 100.0, vertical: 10.0),
+                            height: 50,
+                            width: 150,
+                            decoration: BoxDecoration(
+                              color: Color(0xFFfaacb5),
+                              borderRadius: BorderRadius.circular(25.0),
+                              border: Border.all(
+                                color: Color(0xFF160E73),
+                              ),
+                            ),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 10.0, horizontal: 10.0),
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  // print("Данные: ${categoriesIdx[selectedIndex!]}, $saveDate, $wastePrice, $wasteDescription");
+                                  ConfirmDelete(context, wasteId!);
+                                  // Navigator.pushReplacement(
+                                  //     context,
+                                  //     MaterialPageRoute(
+                                  //         builder: (context) => CategoriesPage(
+                                  //           title: 'Wallet App')));
+                                });
+                              },
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Text(
+                                    'Удалить',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      color: Color(0xFF160E73),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                        ])),
                       ],
                     ),
                   )),

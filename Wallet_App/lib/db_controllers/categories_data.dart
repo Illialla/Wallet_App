@@ -125,7 +125,7 @@ Future<Map<String, List<List<String>>>> getCategoryWasteList(int categoryId) asy
   // Ваш существующий код для получения данных из базы
   Database database = await openDatabase(join(await getDatabasesPath(), 'wallet_database2.db'));
   String query = '''
-      SELECT w.sum, w.date, w.description 
+      SELECT w.sum, w.date, w.description, w.waste_id 
       FROM tblWaste as w 
       JOIN tblCategory as cat ON cat.category_id = w.category_id 
       WHERE w.category_id = "$categoryId"
@@ -143,7 +143,8 @@ Future<Map<String, List<List<String>>>> getCategoryWasteList(int categoryId) asy
     // Форматируем дату
     String formatedDate = "${dateParts[2]}.${dateParts[1]}.${dateParts[0]}";
     String description = category['description'];
-    categoryList.add([sum, formatedDate, description]);
+    String wasteId = category['waste_id'].toString();
+    categoryList.add([sum, formatedDate, description, wasteId]);
   });
 
   // Группировка данных по дате
@@ -152,10 +153,11 @@ Future<Map<String, List<List<String>>>> getCategoryWasteList(int categoryId) asy
     String sum = category[0];
     String date = category[1];
     String description = category[2];
+    String wasteId = category[3].toString();
     if (groupedData.containsKey(date)) {
-      groupedData[date]!.add([sum, date, description]);
+      groupedData[date]!.add([sum, date, description, wasteId]);
     } else {
-      groupedData[date] = [[sum, date, description]];
+      groupedData[date] = [[sum, date, description, wasteId]];
     }
   });
   print(groupedData);
